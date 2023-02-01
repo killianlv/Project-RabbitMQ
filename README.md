@@ -1,15 +1,4 @@
-# Getting Started with Create React App
-docker-compose up
-# end point
-[http://localhost:3000](http://localhost:3000)
-
-[http://localhost:3000/insert](http://localhost:3000/insert)
-
-[http://localhost:3000/fetch](http://localhost:3000/fetch)
-
-Rabit : [http://localhost:15672/](http://localhost:15672/)
-
-
+Killian LE VAILLANT projet rabitmq
 
 # Pour lancer l'application
 
@@ -29,6 +18,10 @@ L'API et le Worker sont lancer 15 secons après le lancement de RabitMQ
 
 
 # Point d'accès de l'api :
+
+Vous aves accès a une collection postman dans : ```Project RabbitMQ.postman_collection.json```
+
+Dans postmap faite "import" -> "choose File" -> sélectioner le fichier json -> faire "import"
 
 ## Pour vérifier qu'elle est en route :
 
@@ -69,3 +62,17 @@ Vous pouvez voir toutes les commande avec :
 Les helpers
 - rabitmq.js = helper pour conextion rabitmq
 - dbMysql.js = helper pour conextion base de données
+
+
+# RabitMq :
+
+Vous pouvez accéder a l'interface rabitmq avec http://localhost:15672/
+
+user : guest
+mdp : guest
+
+Normalement la queue est crée authomatiquement
+
+Mais vous pouvez en ajouter une dans "queues" -> "add queue"
+
+Le nom de la queue doit étre le m^me que dans le .env

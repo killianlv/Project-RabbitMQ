@@ -12,10 +12,13 @@ const con = db.connectionDb()
 
 var queue = process.env.RABITMQ_QUEUE_NAME
 const rabitmqConnexion = await rabitmq(queue);
-console.log("ici")
+console.log("running")
 
 const ch = await rabitmqConnexion.connection.createChannel();
 
+ch.assertQueue(queue, {
+    durable: true
+});
 
 ch.consume(queue, function(msg) {
     console.log(" [x] Received %s", msg.content.toString());

@@ -1,11 +1,10 @@
 import { rabitmq } from "./rabitmq.js"
 import { dbMysql } from "./dbMysql.js"
 import dotenv from "dotenv"
-
-//CONFIG
-
-
 dotenv.config();
+
+//###########################################################
+
 const db = await dbMysql();
 const con = db.connectionDb()
 

@@ -37,9 +37,11 @@ app.post('/insert', function (req, res) {
 
   con.connect(async function(err) {
     if (err) throw err;
+    //Insert in DB
     const sql = `INSERT INTO orders (name, status) VALUES ('${name}', '${status}')`
     con.query(sql, function (err, result) {
       if (err) throw err;
+      //Send to rabitmq
       rabitmqConnexion.sendMessageToQueue(`{ "orderId": "${result.insertId}", "message": "${status}"}`)
       return res.status(201).json(result.insertId)
     });
@@ -50,10 +52,9 @@ app.post('/insert', function (req, res) {
 //GET get order with id
 app.get('/order/:id', function (req, res) {
 
-  //TODO check if id type is int
-
   con.connect(function(err) {
     if (err) throw err;
+    //Get from DB
     const sql = `SELECT * FROM orders WHERE orderId = ${req.params.id}`
     con.query(sql, function (err, result, fields) {
       if (err) throw err;
@@ -71,6 +72,7 @@ app.get('/order/:id', function (req, res) {
 app.get('/fetch', async function (req, res) {
   con.connect(function(err) {
     if (err) throw err;
+    //Get from DB
     const sql = `SELECT * FROM orders`
     con.query(sql, function (err, result, fields) {
       if (err) throw err;

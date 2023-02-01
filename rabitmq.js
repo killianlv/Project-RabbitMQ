@@ -2,6 +2,7 @@ import * as amqplib from "amqplib";
 import dotenv from "dotenv"
 dotenv.config();
 
+//###########################################################
 
 export async function rabitmq(queueName) {
 
@@ -22,7 +23,6 @@ export async function rabitmq(queueName) {
     const ch = await connection.createChannel();
     ch.sendToQueue(queueName, Buffer.from(json));
   }
-
 
 
   return {

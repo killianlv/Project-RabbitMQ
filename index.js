@@ -1,61 +1,105 @@
-const express = require('express')
-const mysql = require('mysql2');
+import express from "express"
+import mysql from "mysql2"
+import { rabitmq } from "./rabitmq.js"
+import dotenv from "dotenv"
+import { dbMysql } from "./dbMysql.js"
+
+
+
+//CONFIG DOCKER
+
+/*const mysqlConfig = {
+  host: "mysql_server",
+  user: "killian",
+  password: "secret",
+  database: "test_db"
+}*/
 
 const mysqlConfig = {
-  host: "mysql_server",
+  host: "localhost",
   user: "killian",
   password: "secret",
   database: "test_db"
 }
 
-let con = null
-con =  mysql.createConnection(mysqlConfig);
-con.connect(function(err) {
-  if (err) throw err;
-  const sql = `
-  CREATE TABLE IF NOT EXISTS orders (
-    orderId INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
-    status VARCHAR(55) NOT NULL
-  )  ENGINE=INNODB;
-  `;
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-  });
-})
+dotenv.config();
+var queue = process.env.RABITMQ_QUEUE_NAME
+const rabitmqConnexion = await rabitmq(queue);
+
+const db = await dbMysql();
+const con = db.connectionDb()
 
 const app = express()
+//FIN CONFIG
+
+
+
+
+
+
+
+
 
 
 app.get('/', function (req, res) {
   res.send('hello world')
 })
 
+//TODO post + send to rabitmq
 app.get('/insert', function (req, res) {
+
   const myname = 'test'
   const mystatus = 'status1'
-  con.connect(function(err) {
+
+  con.connect(async function(err) {
     if (err) throw err;
     const sql = `INSERT INTO orders (name, status) VALUES ('${myname}', '${mystatus}')`
     con.query(sql, function (err, result) {
       if (err) throw err;
-      res.send(`inserted into table, yout order id is ${result.insertId}`)
+      rabitmqConnexion.sendMessageToQueue(`{ "orderId": "${result.insertId}", "message": "Waiting for processing"}`)
+      res.send(`Your order has been taken into account. His identifier is : ${result.insertId}`)
     });
   })
 })
 
-app.get('/fetch', function (req, res) {
+
+
+
+
+
+//Gett order with id
+app.get('/order/:id', function (req, res) {
+
+  //TODO check if id type is int
+
+  con.connect(function(err) {
+    if (err) throw err;
+    const sql = `SELECT * FROM orders WHERE orderId = ${req.params.id}`
+    con.query(sql, function (err, result, fields) {
+      if (err) throw err;
+
+      if(result.length > 0)
+        return res.status(200).json(result)
+
+      return res.sendStatus(404)
+    });
+  });
+})
+
+
+//Gett all orders
+app.get('/fetch', async function (req, res) {
   con.connect(function(err) {
     if (err) throw err;
     const sql = `SELECT * FROM orders`
     con.query(sql, function (err, result, fields) {
       if (err) throw err;
-      res.send(JSON.stringify(result))
+      return res.status(200).json(result)
     });
   });
 })
 
-app.listen(3000)
+app.listen(process.env.API_PORT)
 
-console.log("listening on port 3000")
+console.log("listening on port " + process.env.API_PORT)
 

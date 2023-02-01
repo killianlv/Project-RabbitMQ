@@ -3,12 +3,18 @@ import mysql from "mysql2"
 
 export async function dbMysql() {
     
+    // const mysqlConfig = {
+    //     host: "localhost",
+    //     user: "killian",
+    //     password: "secret",
+    //     database: "test_db"
+    // }
     const mysqlConfig = {
-        host: "localhost",
+        host: "mysql_server",
         user: "killian",
         password: "secret",
         database: "test_db"
-    }
+      }
 
     
 

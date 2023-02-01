@@ -19,12 +19,14 @@ const ch = await rabitmqConnexion.connection.createChannel();
 
 ch.consume(queue, function(msg) {
     console.log(" [x] Received %s", msg.content.toString());
-    const mystatus = "testttttt"
-    const myid = 10
-    //TODO modifier status BDD
+    const status = process.env.STATUS_DONE
+    const commande = JSON.parse(msg.content.toString());
+    const orderId = commande.orderId
+
+    //Update status in BDD
     con.connect(async function(err) {
         if (err) throw err;
-        const sql = `UPDATE orders SET status = '${mystatus}' WHERE orderId = ${myid}`
+        const sql = `UPDATE orders SET status = '${status}' WHERE orderId = ${orderId}`
         console.log(sql)
         con.query(sql, function (err, result) {
           if (err) throw err;

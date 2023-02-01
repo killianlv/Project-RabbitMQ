@@ -1,73 +1,53 @@
 import express from "express"
-import mysql from "mysql2"
 import { rabitmq } from "./rabitmq.js"
 import dotenv from "dotenv"
 import { dbMysql } from "./dbMysql.js"
 
-
-
-//CONFIG DOCKER
-
-/*const mysqlConfig = {
-  host: "mysql_server",
-  user: "killian",
-  password: "secret",
-  database: "test_db"
-}*/
-
-const mysqlConfig = {
-  host: "localhost",
-  user: "killian",
-  password: "secret",
-  database: "test_db"
-}
+//###########################################################
 
 dotenv.config();
+
+//RabitMQ
 var queue = process.env.RABITMQ_QUEUE_NAME
 const rabitmqConnexion = await rabitmq(queue);
 
+//DB
 const db = await dbMysql();
 const con = db.connectionDb()
 
 const app = express()
-//FIN CONFIG
+
+//###########################################################
 
 
-
-
-
-
-
-
-
-
+//GET home page
 app.get('/', function (req, res) {
-  res.send('hello world')
+  res.send('API is running')
 })
 
-//TODO post + send to rabitmq
-app.get('/insert', function (req, res) {
 
-  const myname = 'test'
-  const mystatus = 'status1'
+//POST faire une demande de commande
+app.post('/insert', function (req, res) {
+
+  let name = req.query.name;
+  if(!name)
+    name = 'commande'
+
+  const status = process.env.STATUS_WAITING_FOR_PROCESSING
 
   con.connect(async function(err) {
     if (err) throw err;
-    const sql = `INSERT INTO orders (name, status) VALUES ('${myname}', '${mystatus}')`
+    const sql = `INSERT INTO orders (name, status) VALUES ('${name}', '${status}')`
     con.query(sql, function (err, result) {
       if (err) throw err;
-      rabitmqConnexion.sendMessageToQueue(`{ "orderId": "${result.insertId}", "message": "Waiting for processing"}`)
-      res.send(`Your order has been taken into account. His identifier is : ${result.insertId}`)
+      rabitmqConnexion.sendMessageToQueue(`{ "orderId": "${result.insertId}", "message": "${status}"}`)
+      return res.status(201).json(result.insertId)
     });
   })
 })
 
 
-
-
-
-
-//Gett order with id
+//GET get order with id
 app.get('/order/:id', function (req, res) {
 
   //TODO check if id type is int
@@ -87,7 +67,7 @@ app.get('/order/:id', function (req, res) {
 })
 
 
-//Gett all orders
+//GET get all orders
 app.get('/fetch', async function (req, res) {
   con.connect(function(err) {
     if (err) throw err;
@@ -99,7 +79,8 @@ app.get('/fetch', async function (req, res) {
   });
 })
 
-app.listen(process.env.API_PORT)
 
+
+app.listen(process.env.API_PORT)
 console.log("listening on port " + process.env.API_PORT)
 

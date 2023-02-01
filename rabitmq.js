@@ -1,9 +1,12 @@
 import * as amqplib from "amqplib";
+import dotenv from "dotenv"
+dotenv.config();
+
 
 export async function rabitmq(queueName) {
 
   const connection = await amqplib.connect(
-    "amqp://guest:guest@localhost:5672",
+    process.env.AMQP_CONNECTION_STRING,
     (err, connection) => {
       if (err) return reject(err);
       channel.assertQueue(queueName, {

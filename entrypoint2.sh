@@ -19,4 +19,4 @@ wait rabbitmq service
 
 sleep 15
 
-node index.js
+node worker.js

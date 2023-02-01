@@ -4,7 +4,7 @@ Killian LE VAILLANT projet rabitmq
 
 Vous devez avoir docker sur votre machine
 
-Par la suite dans un terminal vous pouvez lancer la commande :
+Par la suite dans un terminal, vous pouvez lancer la commande :
 
 ```docker-compose up --build```
 
@@ -14,18 +14,18 @@ Cette commande va lancer :
 - L'API de commandes
 - Le worker
 
-L'API et le Worker sont lancer 15 secons après le lancement de RabitMQ
+L'API et le Worker sont lancés 15 seconds après le lancement de RabitMQ
 
 
 # Point d'accès de l'api :
 
-Vous aves accès a une collection postman dans : ```Project RabbitMQ.postman_collection.json```
+Vous avez accès a une collection postman dans : ```Project RabbitMQ.postman_collection.json```
 
 Dans postmap faite "import" -> "choose File" -> sélectioner le fichier json -> faire "import"
 
 ## Pour vérifier qu'elle est en route :
 
-Page d'accueil (hello world) 
+Page d'accueil (API is running) 
 
 ```GET http://localhost:3000/```
 
@@ -37,11 +37,11 @@ Vous pouvez ajouter en query params le nom de la commande :
 ```POST http://localhost:3000/insert?name=toto```
 par default ce sera commande
 
-Vous receverez en retour l'id généré
+Vous recevrez en retour l'id généré
 
 ## Vérifier le status de la commande
 
-Vous pouvez vérifier le status de la commande a l'ai de l'id que vous avez recu.
+Vous pouvez vérifier le statut de la commande a l'ai de l'id que vous avez reçu.
 
 ```GET http://localhost:3000/order/:id```
 
